@@ -1,0 +1,5 @@
+{
+"txts_diretorio":   "txt_teste",
+"debug_log":   "False",
+"termos_caminho" : "padroes.json"
+}

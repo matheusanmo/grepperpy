@@ -1,0 +1,46 @@
+{
+    "padroes": [
+        {
+            "displayname": "cancer",
+            "re_patterns": [
+                "cancer",
+                "mestatase"
+            ],
+            "linhas_alcance":     5,
+            "minimo_ocorrencias": 2
+
+        },
+        {
+            "displayname": "rescisao",
+            "re_patterns": [
+                "rescisao",
+                "recindido"
+            ],
+            "linhas_alcance":     5,
+            "minimo_ocorrencias": 2
+
+        },
+        {
+            "displayname": "juiz",
+            "re_patterns": [
+                "juiz",
+                "juiza"
+            ],
+            "linhas_alcance":     5,
+            "minimo_ocorrencias": 2
+
+        },
+        {
+            "displayname": "radioterapia",
+            "re_patterns": [
+                "radioterapico",
+                "radioterapia",
+                "radio terapia",
+                "radioterapica"
+            ],
+            "linhas_alcance":     1,
+            "minimo_ocorrencias": 1
+
+        }
+    ]
+}
