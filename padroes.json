@@ -1,46 +1,1622 @@
 {
     "padroes": [
         {
-            "displayname": "cancer",
+            "pattern_name": "quimioterapia",
             "re_patterns": [
-                "cancer",
-                "mestatase"
+                "quimioterapia",
+                "quimioterapico",
+                "quimioterapica"
             ],
-            "linhas_alcance":     5,
-            "minimo_ocorrencias": 2
-
+            "linhas_contexto": 3
         },
         {
-            "displayname": "rescisao",
+            "pattern_name": "embasamento",
             "re_patterns": [
-                "rescisao",
-                "recindido"
+                "acesso ao? medicamentos?",
+                "acesso ao? tratamentos?",
+                "(art\\.?|artigo) 196",
+                "direito ao? (assistencia farmaceutica|assistencia medica|internacao|saude|vida|tratamento|medicamento)"
             ],
-            "linhas_alcance":     5,
-            "minimo_ocorrencias": 2
-
+            "linhas_contexto": 3
         },
-        {
-            "displayname": "juiz",
-            "re_patterns": [
-                "juiz",
-                "juiza"
-            ],
-            "linhas_alcance":     5,
-            "minimo_ocorrencias": 2
 
-        },
         {
-            "displayname": "radioterapia",
+            "pattern_name": "radioterapia",
             "re_patterns": [
+                "radioterapia", 
                 "radioterapico",
-                "radioterapia",
-                "radio terapia",
                 "radioterapica"
             ],
-            "linhas_alcance":     1,
-            "minimo_ocorrencias": 1
-
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "abraxane",
+            "re_patterns": [
+                "abraxane"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "acalabrutinibe",
+            "re_patterns": [
+                "acalabrutinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "acetato",
+            "re_patterns": [
+                "acetato"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "acido zoledronico",
+            "re_patterns": [
+                "acido zoledronico"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "adcetris",
+            "re_patterns": [
+                "adcetris"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "adriblastina",
+            "re_patterns": [
+                "adriblastina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "afinitor",
+            "re_patterns": [
+                "afinitor"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "aflibercepte",
+            "re_patterns": [
+                "aflibercepte"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "agrylin",
+            "re_patterns": [
+                "agrylin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "akssus",
+            "re_patterns": [
+                "akssus"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "alecensa",
+            "re_patterns": [
+                "alecensa"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "alfainterferona 2a",
+            "re_patterns": [
+                "alfainterferona 2a"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "alimta",
+            "re_patterns": [
+                "alimta"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "alkeran",
+            "re_patterns": [
+                "alkeran"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "alpelisibe",
+            "re_patterns": [
+                "alpelisibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "amifostina",
+            "re_patterns": [
+                "amifostina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "anastrol",
+            "re_patterns": [
+                "anastrol"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "anastrolibbs",
+            "re_patterns": [
+                "anastrolibbs"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "anastrozol",
+            "re_patterns": [
+                "anastrozol"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "anya",
+            "re_patterns": [
+                "anya"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "apalutamida",
+            "re_patterns": [
+                "apalutamida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "arazabi",
+            "re_patterns": [
+                "arazabi"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "arimidex",
+            "re_patterns": [
+                "arimidex"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "aromasin",
+            "re_patterns": [
+                "aromasin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "asparaginase",
+            "re_patterns": [
+                "asparaginase"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "atendimento pelo sus",
+            "re_patterns": [
+                "atendimento pelo sus"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "atezolizumabe",
+            "re_patterns": [
+                "atezolizumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "atobach",
+            "re_patterns": [
+                "atobach"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "atred",
+            "re_patterns": [
+                "atred"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "avastin",
+            "re_patterns": [
+                "avastin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "avelumabe",
+            "re_patterns": [
+                "avelumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "axitinibe",
+            "re_patterns": [
+                "axitinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "azacitidina",
+            "re_patterns": [
+                "azacitidina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "b -platin",
+            "re_patterns": [
+                "b -platin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "balefio",
+            "re_patterns": [
+                "balefio"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "baricitinibe",
+            "re_patterns": [
+                "baricitinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bavencio",
+            "re_patterns": [
+                "bavencio"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "beleodaq",
+            "re_patterns": [
+                "beleodaq"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "belinostate",
+            "re_patterns": [
+                "belinostate"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "besponsa",
+            "re_patterns": [
+                "besponsa"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bevacizumabe",
+            "re_patterns": [
+                "bevacizumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bicalutamida",
+            "re_patterns": [
+                "bicalutamida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "blinatumomabe",
+            "re_patterns": [
+                "blinatumomabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "blincyto",
+            "re_patterns": [
+                "blincyto"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bonar",
+            "re_patterns": [
+                "bonar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bortezomibe",
+            "re_patterns": [
+                "bortezomibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bortyz",
+            "re_patterns": [
+                "bortyz"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bozored",
+            "re_patterns": [
+                "bozored"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "brecila",
+            "re_patterns": [
+                "brecila"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "brentuximabe vedotina",
+            "re_patterns": [
+                "brentuximabe vedotina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "brigatinibe",
+            "re_patterns": [
+                "brigatinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "busilvex",
+            "re_patterns": [
+                "busilvex"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bussulfano",
+            "re_patterns": [
+                "bussulfano"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "bycal",
+            "re_patterns": [
+                "bycal"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "c-platin",
+            "re_patterns": [
+                "c-platin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "caab",
+            "re_patterns": [
+                "caab"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cabazitaxel",
+            "re_patterns": [
+                "cabazitaxel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cabazred",
+            "re_patterns": [
+                "cabazred"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "caelyx",
+            "re_patterns": [
+                "caelyx"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "calquence",
+            "re_patterns": [
+                "calquence"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "camptosar",
+            "re_patterns": [
+                "camptosar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "camptrix",
+            "re_patterns": [
+                "camptrix"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cancer",
+            "re_patterns": [
+                "cancer"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cancerigeno",
+            "re_patterns": [
+                "cancerigeno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "capecare",
+            "re_patterns": [
+                "capecare"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "capecitabina",
+            "re_patterns": [
+                "capecitabina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "capeliv",
+            "re_patterns": [
+                "capeliv"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "caprelsa",
+            "re_patterns": [
+                "caprelsa"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "carboplatina",
+            "re_patterns": [
+                "carboplatina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "carcinoma",
+            "re_patterns": [
+                "carcinoma"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "carfilzomibe",
+            "re_patterns": [
+                "carfilzomibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "carmustina",
+            "re_patterns": [
+                "carmustina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "casodex",
+            "re_patterns": [
+                "casodex"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cemiplimabe",
+            "re_patterns": [
+                "cemiplimabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cetuximabe",
+            "re_patterns": [
+                "cetuximabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "ciclofosfamida monoidratada",
+            "re_patterns": [
+                "ciclofosfamida monoidratada"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cimaher",
+            "re_patterns": [
+                "cimaher"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cinaleo",
+            "re_patterns": [
+                "cinaleo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cirurgia cancer",
+            "re_patterns": [
+                "cirurgia cancer"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cisplatina",
+            "re_patterns": [
+                "cisplatina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "citoplatina",
+            "re_patterns": [
+                "citoplatina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "citoplax",
+            "re_patterns": [
+                "citoplax"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "citostina",
+            "re_patterns": [
+                "citostina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "citrato de ixazomibe",
+            "re_patterns": [
+                "citrato de ixazomibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "citrato de tamoxifeno",
+            "re_patterns": [
+                "citrato de tamoxifeno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cladribina",
+            "re_patterns": [
+                "cladribina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "clorambucila",
+            "re_patterns": [
+                "clorambucila"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cloreto de radio (223 ra)",
+            "re_patterns": [
+                "cloreto de radio (223 ra)"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cloridrato",
+            "re_patterns": [
+                "cloridrato"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cloritecan",
+            "re_patterns": [
+                "cloritecan"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "coama",
+            "re_patterns": [
+                "coama"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "collectro",
+            "re_patterns": [
+                "collectro"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "corretal",
+            "re_patterns": [
+                "corretal"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cotellic",
+            "re_patterns": [
+                "cotellic"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "crizotinibe",
+            "re_patterns": [
+                "crizotinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cropoc",
+            "re_patterns": [
+                "cropoc"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "custo do medicamento",
+            "re_patterns": [
+                "custo do medicamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "custo do tratamento",
+            "re_patterns": [
+                "custo do tratamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cyramza",
+            "re_patterns": [
+                "cyramza"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cytogem",
+            "re_patterns": [
+                "cytogem"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dabaz",
+            "re_patterns": [
+                "dabaz"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dacarb",
+            "re_patterns": [
+                "dacarb"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dacarbazina",
+            "re_patterns": [
+                "dacarbazina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dacogen",
+            "re_patterns": [
+                "dacogen"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dasatinibe",
+            "re_patterns": [
+                "dasatinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "daunoblastina",
+            "re_patterns": [
+                "daunoblastina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "decitabina",
+            "re_patterns": [
+                "decitabina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "denosumabe",
+            "re_patterns": [
+                "denosumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "densis",
+            "re_patterns": [
+                "densis"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dimaleato de afatinibe",
+            "re_patterns": [
+                "dimaleato de afatinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dimetilsulfoxido de trametinibe",
+            "re_patterns": [
+                "dimetilsulfoxido de trametinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "ditartarato de vinorelbina",
+            "re_patterns": [
+                "ditartarato de vinorelbina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "ditosilato de lapatinibe",
+            "re_patterns": [
+                "ditosilato de lapatinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "doceglennu",
+            "re_patterns": [
+                "doceglennu"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "docelibbs",
+            "re_patterns": [
+                "docelibbs"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "docetaxel",
+            "re_patterns": [
+                "docetaxel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "doceuno",
+            "re_patterns": [
+                "doceuno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "docks",
+            "re_patterns": [
+                "docks"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dosataxel",
+            "re_patterns": [
+                "dosataxel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "doxopeg",
+            "re_patterns": [
+                "doxopeg"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dronik",
+            "re_patterns": [
+                "dronik"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "dti",
+            "re_patterns": [
+                "dti"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "durvalumabe",
+            "re_patterns": [
+                "durvalumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "efurix",
+            "re_patterns": [
+                "efurix"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "eligard",
+            "re_patterns": [
+                "eligard"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "elotuzumabe",
+            "re_patterns": [
+                "elotuzumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "emah",
+            "re_patterns": [
+                "emah"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "empliciti",
+            "re_patterns": [
+                "empliciti"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "emtaz",
+            "re_patterns": [
+                "emtaz"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "enzalutamida",
+            "re_patterns": [
+                "enzalutamida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "eposido",
+            "re_patterns": [
+                "eposido"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "eranful",
+            "re_patterns": [
+                "eranful"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "erbitux",
+            "re_patterns": [
+                "erbitux"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "erdafitinibe",
+            "re_patterns": [
+                "erdafitinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "erfandel",
+            "re_patterns": [
+                "erfandel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "erivedge",
+            "re_patterns": [
+                "erivedge"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "erleada",
+            "re_patterns": [
+                "erleada"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "eroxym",
+            "re_patterns": [
+                "eroxym"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "esilato de nintedanibe",
+            "re_patterns": [
+                "esilato de nintedanibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "etopos",
+            "re_patterns": [
+                "etopos"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "etoposideo",
+            "re_patterns": [
+                "etoposideo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "etoposido",
+            "re_patterns": [
+                "etoposido"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "eunades cs",
+            "re_patterns": [
+                "eunades cs"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "everolimo",
+            "re_patterns": [
+                "everolimo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evobrig",
+            "re_patterns": [
+                "evobrig"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evocarb",
+            "re_patterns": [
+                "evocarb"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evoclass",
+            "re_patterns": [
+                "evoclass"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evodazin",
+            "re_patterns": [
+                "evodazin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evoflubina",
+            "re_patterns": [
+                "evoflubina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evolox",
+            "re_patterns": [
+                "evolox"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evomid",
+            "re_patterns": [
+                "evomid"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evomixan",
+            "re_patterns": [
+                "evomixan"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evoposdo",
+            "re_patterns": [
+                "evoposdo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evorubicin",
+            "re_patterns": [
+                "evorubicin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evotabina",
+            "re_patterns": [
+                "evotabina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evotaxel",
+            "re_patterns": [
+                "evotaxel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evotecan",
+            "re_patterns": [
+                "evotecan"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evoterin",
+            "re_patterns": [
+                "evoterin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "evozar",
+            "re_patterns": [
+                "evozar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "exemestano",
+            "re_patterns": [
+                "exemestano"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "exher",
+            "re_patterns": [
+                "exher"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "farmorubicina",
+            "re_patterns": [
+                "farmorubicina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "faslodex",
+            "re_patterns": [
+                "faslodex"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "faulblastina",
+            "re_patterns": [
+                "faulblastina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fauldacar",
+            "re_patterns": [
+                "fauldacar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fauldcispla",
+            "re_patterns": [
+                "fauldcispla"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fauldoxo",
+            "re_patterns": [
+                "fauldoxo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fauldpami",
+            "re_patterns": [
+                "fauldpami"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fauldvincri",
+            "re_patterns": [
+                "fauldvincri"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "femara",
+            "re_patterns": [
+                "femara"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "femigestrol",
+            "re_patterns": [
+                "femigestrol"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fluoruracila",
+            "re_patterns": [
+                "fluoruracila"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "flusan",
+            "re_patterns": [
+                "flusan"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "flutamid",
+            "re_patterns": [
+                "flutamid"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "flutamida",
+            "re_patterns": [
+                "flutamida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fonhep",
+            "re_patterns": [
+                "fonhep"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fornecimento do medicamento",
+            "re_patterns": [
+                "fornecimento do medicamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fosfato de fludarabina",
+            "re_patterns": [
+                "fosfato de fludarabina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fosfato de ruxolitinibe",
+            "re_patterns": [
+                "fosfato de ruxolitinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fotemustina",
+            "re_patterns": [
+                "fotemustina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "fulvestranto",
+            "re_patterns": [
+                "fulvestranto"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gazyva",
+            "re_patterns": [
+                "gazyva"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gcib",
+            "re_patterns": [
+                "gcib"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gefitinibe",
+            "re_patterns": [
+                "gefitinibe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gemcired",
+            "re_patterns": [
+                "gemcired"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gemcit",
+            "re_patterns": [
+                "gemcit"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gemzar",
+            "re_patterns": [
+                "gemzar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gencitabina",
+            "re_patterns": [
+                "gencitabina"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gencix",
+            "re_patterns": [
+                "gencix"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "genlibbs",
+            "re_patterns": [
+                "genlibbs"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "genuxal",
+            "re_patterns": [
+                "genuxal"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "giotrif",
+            "re_patterns": [
+                "giotrif"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "gliadel",
+            "re_patterns": [
+                "gliadel"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "glimatin",
+            "re_patterns": [
+                "glimatin"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "internacao hospitalar",
+            "re_patterns": [
+                "internacao hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "ipilimumabe",
+            "re_patterns": [
+                "ipilimumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "leito hospitalar",
+            "re_patterns": [
+                "leito hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "leito uti",
+            "re_patterns": [
+                "leito uti"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "linfoma",
+            "re_patterns": [
+                "linfoma"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicamento cancer",
+            "re_patterns": [
+                "medicamento cancer"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicamento importado",
+            "re_patterns": [
+                "medicamento importado"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicamento para neoplasia",
+            "re_patterns": [
+                "medicamento para neoplasia"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicamento prescrito",
+            "re_patterns": [
+                "medicamento prescrito"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicamento de alto custo",
+            "re_patterns": [
+                "medicamento de alto custo"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "medicacao",
+            "re_patterns": [
+                "medicacao"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "melanoma",
+            "re_patterns": [
+                "melanoma"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "metastase",
+            "re_patterns": [
+                "metastase"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "necessidade do medicamento",
+            "re_patterns": [
+                "necessidade do medicamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "necessidade do tratamento",
+            "re_patterns": [
+                "necessidade do tratamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "neoplasia maligna",
+            "re_patterns": [
+                "neoplasia maligna"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "nivolumabe",
+            "re_patterns": [
+                "nivolumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "pembrolizumabe",
+            "re_patterns": [
+                "pembrolizumabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "rede publica de saude",
+            "re_patterns": [
+                "rede publica de saude"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "registro na anvisa",
+            "re_patterns": [
+                "registro na anvisa"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "risco de vida",
+            "re_patterns": [
+                "risco de vida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "rituximabe",
+            "re_patterns": [
+                "rituximabe"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "saude publica",
+            "re_patterns": [
+                "saude publica"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "servico hospitalar",
+            "re_patterns": [
+                "servico hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "sistema unico de saude",
+            "re_patterns": [
+                "sistema unico de saude"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "sus",
+            "re_patterns": [
+                "sus"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "temozolomida",
+            "re_patterns": [
+                "temozolomida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tratamento a saude",
+            "re_patterns": [
+                "tratamento a saude"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tratamento cancer",
+            "re_patterns": [
+                "tratamento cancer"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tratamento de neoplasia",
+            "re_patterns": [
+                "tratamento de neoplasia"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tratamento medico",
+            "re_patterns": [
+                "tratamento medico"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tumor maligno",
+            "re_patterns": [
+                "tumor maligno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "vaga em uti",
+            "re_patterns": [
+                "vaga em uti"
+            ],
+            "linhas_contexto": 3
         }
     ]
 }

@@ -2,9 +2,12 @@ import re
 import sys
 import json
 import logging
+from sqlite3   import connect, Connection
 from typing    import List, Pattern
 from pathlib   import Path
 from itertools import count
+
+import pandas as pd
 
 OCORRENCIAS_CONTEXT_LINES = 3
 
@@ -63,7 +66,7 @@ class Padrao:
         return
 
 class Ocorrencia:
-    __slots__ = ['lines', 'pattern_displayname', 'filename', 'linha_match', "_dict"]
+    __slots__ = ['lines', 'pattern_displayname', 'filename', 'linha_match', '_dict']
     def __init__(self,
                  lines: List[str],
                  pattern_displayname: str,
@@ -90,7 +93,6 @@ class Ocorrencia:
         self._dict["linha_match"]         = self.linha_match
         return self.to_dict()
         
-
 class Conf:
     def __init__(self, filepath: Path):
         with open(filepath, "rt") as fhandle:
@@ -112,6 +114,10 @@ class TxtFile:
         return f"TxtFile('{self.filename}')"
 
     def make_ocorrencias(self, padroes: List[Padrao]):
+        try:
+            return self._ocorrencias
+        except AttributeError:
+            pass
         ocorrencias = []
         for (i, line) in zip(count(), self.lines):
             for padrao in padroes:
@@ -125,6 +131,9 @@ class TxtFile:
                             str(i)))
                         break
         return ocorrencias
+
+    def ocorrencias_to_db(self, conn: Connection):
+
 
 def gen_padroes(conf: Conf):
     padroes = []
@@ -146,9 +155,9 @@ def main():
     txtfiles    = [ TxtFile(txtpath) for txtpath in txtpaths ]
     padroes     = gen_padroes(conf)
     ocorrencias = txtfiles[0].make_ocorrencias(padroes)
+    ocorrencias_df = pd.DataFrame([o.to_dict() for o in ocorrencias])
     import ipdb; ipdb.set_trace()
-    with open("./tmp.json", "wt") as fh:
-        json.dump([o.to_dict() for o in ocorrencias], fh, indent=4, sort_keys=True)
+    oco_group_pattern_count = ocorrencias_df.groupby("pattern_displayname").size().sort_values(ascending=False)
 
 if __name__ == "__main__":
     main()

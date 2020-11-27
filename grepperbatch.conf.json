@@ -1,5 +1,7 @@
 {
-"txts_diretorio":   "txt_teste",
-"debug_log":   "False",
-"termos_caminho" : "padroes.json"
+"txts_diretorio":     "txt_teste",
+"debug_log":          "True",
+"diretorio_output":   "output_teste",
+"max_workers":         1,
+"padroes_json" :      "out2.json"
 }
