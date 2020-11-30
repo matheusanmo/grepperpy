@@ -4,6 +4,7 @@ import time
 import json
 import logging
 import datetime
+import concurrent.futures
 from os        import makedirs
 from typing    import List, Pattern
 from pprint    import pprint
@@ -44,6 +45,7 @@ class Conf:
         self.txts_diretorio   = self.conf_json["txts_diretorio"]
         self.debug_log        = self.conf_json["debug_log"] in TRUE_STRINGS
         self.padroes_json     = self.conf_json["padroes_json"]
+        self.max_workers      = self.conf_json["max_workers"]
         self.diretorio_output = self.conf_json["diretorio_output"]
 
         self.create_output_dir()
@@ -129,7 +131,7 @@ class TxtFile:
         return pd.DataFrame([ o.to_dict() for o in ocorrencias ])
 
     def write_ocorrencias(self, padroes: List[Padrao], db_conn: Connection, tablename: str) -> int:
-        """retorn qtd de ocorrencias achadas"""
+        """retorna qtd de ocorrencias achadas"""
         ocorrencias = self.make_ocorrencias_dataframe(padroes)
         ocorrencias.to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
         return ocorrencias.count()['lines']
@@ -198,6 +200,25 @@ def gen_ocorrencias(conf: Conf):
         ocorrencias_count = txtfile.write_ocorrencias(padroes, db_conn, "ocorrencias")
         logging.info(f"{ocorrencias_count} ocorrencias em {txtfile.filename}.")
     logging.info(f"Ocorrencias de {len(txtfiles)} arquivos salvo em {db_path.name}.")
+    return
+
+def gen_ocorrencias_mp(conf: Conf):
+    db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
+    db_conn     = connect(db_path.as_posix())
+    txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
+    txtfiles    = [ TxtFile(txtpath) for txtpath in txtpaths ]
+    padroes     = gen_padroes(conf)
+    max_workers = conf.max_workers
+    txtfiles_len = len(txtfiles)
+    txtfiles_done = 0
+    tablename = "ocorrencias"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
+        futures = [ tpe.submit(txtfile.make_ocorrencias_dataframe, padroes) for txtfile in txtfiles ]
+        for future in concurrent.futures.as_completed(futures):
+            future.result().to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
+            ocorrencias_geradas = future.result().count()['lines']
+            txtfiles_done += 1
+            logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos.")
     return
 
 def main():

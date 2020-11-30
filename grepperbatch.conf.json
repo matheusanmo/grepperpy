@@ -2,6 +2,6 @@
 "txts_diretorio":     "txt_teste",
 "debug_log":          "True",
 "diretorio_output":   "output_teste",
-"max_workers":         1,
+"max_workers":         3,
 "padroes_json" :      "padroes.json"
 }
