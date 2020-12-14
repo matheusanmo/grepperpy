@@ -115,6 +115,7 @@ class TxtFile:
         return f"TxtFile(Path('{self.filename}'))"
 
     def make_ocorrencias_dataframe(self, padroes: List[Padrao]):
+        print(f"iniciou make_ocorrencias_dataframe de {self.filename}")
         ocorrencias = []
         for (i, line) in zip(count(), self.lines):
             for padrao in padroes:
@@ -134,7 +135,11 @@ class TxtFile:
         """retorna qtd de ocorrencias achadas"""
         ocorrencias = self.make_ocorrencias_dataframe(padroes)
         ocorrencias.to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
-        return ocorrencias.count()['lines']
+        try:
+            return ocorrencias.count()['lines']
+        except KeyError:
+            logging.warning("write_ocorrencias key error")
+            return 0
 
 def gen_padroes(conf: Conf):
     padroes = []
@@ -216,7 +221,11 @@ def gen_ocorrencias_mp(conf: Conf):
         futures = [ tpe.submit(txtfile.make_ocorrencias_dataframe, padroes) for txtfile in txtfiles ]
         for future in concurrent.futures.as_completed(futures):
             future.result().to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
-            ocorrencias_geradas = future.result().count()['lines']
+            try:
+                ocorrencias_geradas = future.result().count()['lines']
+            except KeyError:
+                logging.warning("gen_ocorrencias_mp except ocorrencias_geradas")
+                ocorrencias_geradas = 0
             txtfiles_done += 1
             logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos.")
     return
