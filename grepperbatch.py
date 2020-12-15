@@ -1,33 +1,29 @@
 import re
 import sys
+import time
 import json
 import logging
-from sqlite3   import connect, Connection
+import datetime
+import concurrent.futures
+from os        import makedirs
 from typing    import List, Pattern
+from pprint    import pprint
 from pathlib   import Path
+from sqlite3   import connect, Connection
 from itertools import count
 
 import pandas as pd
 
-OCORRENCIAS_CONTEXT_LINES = 3
+DT_NOW    = datetime.datetime.now()
+TIMESTAMP = f"{DT_NOW.year}-{DT_NOW.month}-{DT_NOW.day}-{DT_NOW.hour}-{DT_NOW.minute}-{DT_NOW.second}"
 
-def setup_logging(is_debug: bool):
-    if is_debug:
-        print("debug log ON")
-        timestamp = int(time.time())
-        log_filename = f"grepperbatch_{timestamp}.log"
-        logging_format = '%(asctime)s %(levelname)s - %(message)s'
-        log_handlers = [logging.StreamHandler(sys.stdout), logging.FileHandler(log_filename)]
-        logging.basicConfig(level=logging.DEBUG, format=logging_format, handlers=log_handlers)
-    else:
-        logging_format = '%(asctime)s %(levelname)s - %(message)s'
-        logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], format=logging_format, level=logging.ERROR)
-    return
+TRUE_STRINGS  = ["True", "T", "true", "t", "y", "Y", "yes"]
+FALSE_STRINGS = ["False", "F", "false", "f", "n", "N", "no"]
 
-def desacentuar(linha:str) -> str:
+def desacentuar(linha:str) -> str: 
     """ troca letras acentuadas por sua versao 'sem acento', incluindo c cedilha """
     if not hasattr(desacentuar, "patterns"):
-        logging.info("criando atributos para funcao desacentuar")
+        logging.debug("criando patterns para funcao desacentuar")
         desacentuar.patterns = [
              (re.compile(r'[áàâã]'), 'a'),
              (re.compile(r'[éê]'),   'e'),
@@ -39,70 +35,75 @@ def desacentuar(linha:str) -> str:
     linha = linha.lower()
     for pattern, repl in desacentuar.patterns:
         linha = pattern.sub(repl, linha).strip()
-    return linha
+    return linha 
 
-class Padrao:
-    def __init__(self,
-            displayname:        str, 
-            re_patterns:        List[str],
-            linhas_alcance:     int,
-            minimo_ocorrencias: int
+class Conf: 
+    def __init__(self, filepath: Path):
+        with open(filepath, "rt") as fhandle:
+            self.conf_json = json.load(fhandle)
+        self.file_path        = filepath
+        self.txts_diretorio   = self.conf_json["txts_diretorio"]
+        self.debug_log        = self.conf_json["debug_log"] in TRUE_STRINGS
+        self.padroes_json     = self.conf_json["padroes_json"]
+        self.max_workers      = self.conf_json["max_workers"]
+        self.diretorio_output = self.conf_json["diretorio_output"]
 
-        ):
-        self.displayname        = displayname
-        self.linhas_alcance     = linhas_alcance
-        self.minimo_ocorrencias = minimo_ocorrencias
-        self.gen_patterns(re_patterns)
+        self.create_output_dir()
+        return
+
+    def create_output_dir(self):
+        makedirs(self.diretorio_output, exist_ok=True)
         return
 
     def __repr__(self):
-        return f"<Padrao displayname='{self.displayname}'>"
+        return f"Conf(Path('{self.file_path.name}'))" 
 
-    def gen_patterns(self, patterns):
-        self.re_patterns = [ re.compile(f"\W{desacentuar(patt)}\W", re.I) for patt in patterns ]
+class Padrao: 
+    def __init__(
+        self,
+        pattern_name: str,
+        re_patterns: List[str],
+        linhas_contexto: int
+    ):
+        self.pattern_name = pattern_name
+        self.linhas_contexto = linhas_contexto
+        self.patterns = self.make_patterns(re_patterns)
         return
 
-    def to_dict(self):
-        return
+    def make_patterns(self, patterns: List[str]):
+        return [ re.compile(f"\W{desacentuar(regex)}\W", re.I) for regex in patterns ]
 
-class Ocorrencia:
-    __slots__ = ['lines', 'pattern_displayname', 'filename', 'linha_match', '_dict']
-    def __init__(self,
-                 lines: List[str],
-                 pattern_displayname: str,
-                 filename: str,
-                 linha_match: str):
+    def __repr__(self):
+        return f"<Padrao pattern_name='{self.pattern_name}'>'"
+
+class Ocorrencia: 
+    __slots__ = ['lines', 'pattern_name', 'filename', 'linha_match']
+
+    def __init__(
+            self,
+            lines: List[str],
+            pattern_name: str,
+            filename: str,
+            linha_match: int
+        ):
         self.lines = lines
-        self.pattern_displayname = pattern_displayname
+        self.pattern_name = pattern_name
         self.filename = filename
         self.linha_match = linha_match
         return
 
     def __repr__(self):
-        return f"<Ocorrencia pattern_displayname='{self.pattern_displayname}' filename='{self.filename}'>"
-        
-    def to_dict(self):
-        try:
-            return self._dict
-        except AttributeError:
-            pass
-        self._dict                        = dict()
-        self._dict["lines"]               = self.lines
-        self._dict["pattern_displayname"] = self.pattern_displayname
-        self._dict["filename"]            = self.filename
-        self._dict["linha_match"]         = self.linha_match
-        return self.to_dict()
-        
-class Conf:
-    def __init__(self, filepath: Path):
-        with open(filepath, "rt") as fhandle:
-            self.conf_json  = json.load(fhandle)
-        self.txts_diretorio = self.conf_json["txts_diretorio"]
-        self.debug_log      = self.conf_json["debug_log"]
-        self.termos_caminho = self.conf_json["termos_caminho"]
-        return
+        return f"<Ocorrencia pattern_name='{self.pattern_name}' filename='{self.filename}'>"
 
-class TxtFile:
+    def to_dict(self):
+        return {
+            "lines": '\n'.join(self.lines),
+            "pattern_name": self.pattern_name,
+            "filename": self.filename,
+            "linha_match": self.linha_match
+        }
+
+class TxtFile: 
     def __init__(self, txtpath: Path):
         self.filename = txtpath.name
         with open(txtpath, "rt") as txthandle:
@@ -111,53 +112,135 @@ class TxtFile:
         return
 
     def __repr__(self):
-        return f"TxtFile('{self.filename}')"
+        return f"TxtFile(Path('{self.filename}'))"
 
-    def make_ocorrencias(self, padroes: List[Padrao]):
-        try:
-            return self._ocorrencias
-        except AttributeError:
-            pass
+    def make_ocorrencias_dataframe(self, padroes: List[Padrao]):
         ocorrencias = []
         for (i, line) in zip(count(), self.lines):
             for padrao in padroes:
-                for re_pattern in padrao.re_patterns:
-                    if re_pattern.search(line) != None:
-                        min_index = max(0, i - OCORRENCIAS_CONTEXT_LINES)
-                        max_index = min(self.lines_len, i + OCORRENCIAS_CONTEXT_LINES)
-                        ocorrencias.append(Ocorrencia(self.lines[min_index:max_index],
-                            padrao.displayname,
+                for pattern in padrao.patterns:
+                    if pattern.search(line) != None:
+                        min_index = max(0, i - padrao.linhas_contexto)
+                        max_index = min(self.lines_len, i + padrao.linhas_contexto)
+                        ocorrencias.append(Ocorrencia(
+                            self.lines[min_index:max_index],
+                            padrao.pattern_name,
                             self.filename,
-                            str(i)))
+                            i))
                         break
-        return ocorrencias
+        if ocorrencias == []:
+            return None
+        return pd.DataFrame([ o.to_dict() for o in ocorrencias ])
 
-    def ocorrencias_to_db(self, conn: Connection):
-
+    def write_ocorrencias(self, padroes: List[Padrao], db_conn: Connection, tablename: str) -> int:
+        """retorna qtd de ocorrencias achadas"""
+        ocorrencias = self.make_ocorrencias_dataframe(padroes)
+        if ocorrencias is None:
+            return 0
+        else:
+            ocorrencias.to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
+            return ocorrencias.count()['lines']
 
 def gen_padroes(conf: Conf):
     padroes = []
-    with open(conf.termos_caminho, "rt") as padroes_handle:
+    with open(conf.padroes_json, "rt") as padroes_handle:
         padroes_json = json.load(padroes_handle)
     for padrao_dict in padroes_json["padroes"]:
         padroes.append(Padrao(
-            padrao_dict["displayname"],
+            padrao_dict["pattern_name"],
             padrao_dict["re_patterns"],
-            padrao_dict["linhas_alcance"],
-            padrao_dict["minimo_ocorrencias"]
+            padrao_dict["linhas_contexto"]
             ))
+    logging.info(f"{len(padroes)} padroes gerados.")
     return padroes
 
-def main():
-    setup_logging(False)
-    conf        = Conf(Path("./grepperbatch.conf.json"))
+def setup_logging(is_debug: bool):
+    if is_debug:
+        print("debug log ON")
+        log_filename = f"grepperbatch_{TIMESTAMP}.log"
+        logging_format = '%(asctime)s %(levelname)s - %(message)s'
+        log_handlers = [logging.StreamHandler(sys.stdout), logging.FileHandler(log_filename)]
+        logging.basicConfig(level=logging.INFO, format=logging_format, handlers=log_handlers)
+    else:
+        logging_format = '%(asctime)s %(levelname)s - %(message)s'
+        logging.basicConfig(handlers=[logging.StreamHandler(sys.stdout)], format=logging_format, level=logging.ERROR)
+    return
+
+def gen_conf_path_str():
+    def print_file(filepath: str):
+        with open(filepath, "rt") as fhandle:
+            try:
+                json_dict = json.load(fhandle)
+                pprint(json_dict)
+            except json.decoder.JSONDecodeError:
+                print(f"{filepath} não é JSON válido!")
+        return
+
+    if len(sys.argv) > 1 and Path(sys.argv[1]).is_file():
+        conf_path_str = sys.argv[1]
+        print_file(conf_path_str)
+        return conf_path_str
+    is_good_conf = False
+    is_confirm   = False
+    while (not is_good_conf) or (not is_confirm):
+        is_good_conf = False
+        is_confirm   = False
+        conf_path_str = input(f"Caminho para configuração: ")
+        if Path(conf_path_str).is_file():
+            is_good_conf = True
+            print_file(conf_path_str)
+            confirm       = input(f"Confirma configuração {conf_path_str} (y/n)? ")
+            is_confirm = confirm in TRUE_STRINGS
+        else:
+            print("Arquivo não existe.")
+    return conf_path_str
+
+def gen_ocorrencias(conf: Conf):
+    db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
+    db_conn     = connect(db_path.as_posix())
     txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
     txtfiles    = [ TxtFile(txtpath) for txtpath in txtpaths ]
     padroes     = gen_padroes(conf)
-    ocorrencias = txtfiles[0].make_ocorrencias(padroes)
-    ocorrencias_df = pd.DataFrame([o.to_dict() for o in ocorrencias])
-    import ipdb; ipdb.set_trace()
-    oco_group_pattern_count = ocorrencias_df.groupby("pattern_displayname").size().sort_values(ascending=False)
+    for txtfile in txtfiles:
+        ocorrencias_count = txtfile.write_ocorrencias(padroes, db_conn, "ocorrencias")
+        logging.info(f"{ocorrencias_count} ocorrencias em {txtfile.filename}.")
+    logging.info(f"Ocorrencias de {len(txtfiles)} arquivos salvo em {db_path.name}.")
+    # adicionando coluna 'comentarios'
+    db_curs     = db_conn.cursor()
+    db_curs.execute("ALTER TABLE ocorrencias ADD COLUMN comentarios text")
+    db_conn.commit()
+    return
+
+def gen_ocorrencias_mp(conf: Conf):
+    db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
+    db_conn     = connect(db_path.as_posix())
+    txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
+    txtfiles    = [ TxtFile(txtpath) for txtpath in txtpaths ]
+    padroes     = gen_padroes(conf)
+    max_workers = conf.max_workers
+    txtfiles_len = len(txtfiles)
+    txtfiles_done = 0
+    tablename = "ocorrencias"
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
+        futures = [ tpe.submit(txtfile.make_ocorrencias_dataframe, padroes) for txtfile in txtfiles ]
+        for future in concurrent.futures.as_completed(futures):
+            if future.result() is not None:
+                future.result().to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
+                ocorrencias_geradas = future.result().count()['lines']
+            else:
+                ocorrencias_geradas = 0
+            txtfiles_done += 1
+            logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos. {ocorrencias_geradas} novas ocorrencias.")
+    # adicionando coluna 'comentarios'
+    db_curs     = db_conn.cursor()
+    db_curs.execute("ALTER TABLE ocorrencias ADD COLUMN comentarios text")
+    db_conn.commit()
+    return
+
+def main():
+    conf = Conf(Path(gen_conf_path_str()))
+    setup_logging(conf.debug_log)
+    gen_ocorrencias_mp(conf)
 
 if __name__ == "__main__":
     main()
