@@ -1,0 +1,173 @@
+{
+    "padroes": [
+        {
+            "pattern_name": "quimioterapia",
+            "re_patterns": [
+                "quimioterapia",
+                "quimioterapico",
+                "quimioterapica"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "embasamento",
+            "re_patterns": [
+                "acesso ao? medicamentos?",
+                "acesso ao? tratamentos?",
+                "(art\\.?|artigo) 196",
+                "direito ao? (assistencia farmaceutica|assistencia medica|internacao|saude|vida|tratamento|medicamento)"
+            ],
+            "linhas_contexto": 3
+        },
+
+        {
+            "pattern_name": "radioterapia",
+            "re_patterns": [
+                "radioterapia", 
+                "radioterapico",
+                "radioterapica"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "atendimento pelo sus",
+            "re_patterns": [
+                "atendimento pelo sus"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cancer",
+            "re_patterns": [
+                "cancer"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "cancerigeno",
+            "re_patterns": [
+                "cancerigeno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "custo do medicamento",
+            "re_patterns": [
+                "custo do medicamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "custo do tratamento",
+            "re_patterns": [
+                "custo do tratamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "internacao hospitalar",
+            "re_patterns": [
+                "internacao hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "leito hospitalar",
+            "re_patterns": [
+                "leito hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "leito uti",
+            "re_patterns": [
+                "leito uti"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "linfoma",
+            "re_patterns": [
+                "linfoma"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "metastase",
+            "re_patterns": [
+                "metastase"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "necessidade do medicamento",
+            "re_patterns": [
+                "necessidade do medicamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "necessidade do tratamento",
+            "re_patterns": [
+                "necessidade do tratamento"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "neoplasia maligna",
+            "re_patterns": [
+                "neoplasia maligna"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "rede publica de saude",
+            "re_patterns": [
+                "rede publica de saude"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "risco de vida",
+            "re_patterns": [
+                "risco de vida"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "saude publica",
+            "re_patterns": [
+                "saude publica"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "servico hospitalar",
+            "re_patterns": [
+                "servico hospitalar"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "sistema unico de saude",
+            "re_patterns": [
+                "sistema unico de saude"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "tumor maligno",
+            "re_patterns": [
+                "tumor maligno"
+            ],
+            "linhas_contexto": 3
+        },
+        {
+            "pattern_name": "vaga em uti",
+            "re_patterns": [
+                "vaga em uti"
+            ],
+            "linhas_contexto": 3
+        }
+    ]
+}

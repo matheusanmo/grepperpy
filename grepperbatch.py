@@ -3,11 +3,12 @@ import sys
 import time
 import json
 import logging
+import sqlite3
 import datetime
 import concurrent.futures
 from os        import makedirs
 from typing    import List, Pattern
-from pprint    import pprint
+from pprint    import pprint, pformat
 from pathlib   import Path
 from sqlite3   import connect, Connection
 from itertools import count
@@ -54,6 +55,9 @@ class Conf:
     def create_output_dir(self):
         makedirs(self.diretorio_output, exist_ok=True)
         return
+
+    def pformat(self) -> str:
+        return pformat(self.conf_json)
 
     def __repr__(self):
         return f"Conf(Path('{self.file_path.name}'))" 
@@ -212,17 +216,26 @@ def gen_ocorrencias(conf: Conf):
     return
 
 def gen_ocorrencias_mp(conf: Conf):
+    logging.info(conf.pformat())
+    max_workers = conf.max_workers
+    padroes     = gen_padroes(conf)
+    def ocorrencias_from_txtpath(txtpath: Path) -> pd.DataFrame:
+        logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
+        txtfile = TxtFile(txtpath)
+        return txtfile.make_ocorrencias_dataframe(padroes)
+    # inicializar nosso DB e sua tabela ocorrencias
+    # TODO iniciar tabela de antemao ao inves de esperar o pandas criar um df para criar tabela a partir dele
+    tablename   = "ocorrencias"
     db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
     db_conn     = connect(db_path.as_posix())
+    db_curs     = db_conn.cursor()
+    # gerando lista de arquivos txt apropriados para grepping
     txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
-    txtfiles    = [ TxtFile(txtpath) for txtpath in txtpaths ]
-    padroes     = gen_padroes(conf)
-    max_workers = conf.max_workers
-    txtfiles_len = len(txtfiles)
+    txtfiles_len = len(txtpaths)
     txtfiles_done = 0
-    tablename = "ocorrencias"
+    logging.info(f"{len(txtpaths)} arquivos na fila para extracao")
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
-        futures = [ tpe.submit(txtfile.make_ocorrencias_dataframe, padroes) for txtfile in txtfiles ]
+        futures = [ tpe.submit(ocorrencias_from_txtpath, txtpath) for txtpath in txtpaths ]
         for future in concurrent.futures.as_completed(futures):
             if future.result() is not None:
                 future.result().to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
@@ -232,8 +245,11 @@ def gen_ocorrencias_mp(conf: Conf):
             txtfiles_done += 1
             logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos. {ocorrencias_geradas} novas ocorrencias.")
     # adicionando coluna 'comentarios'
-    db_curs     = db_conn.cursor()
-    db_curs.execute("ALTER TABLE ocorrencias ADD COLUMN comentarios text")
+    # apanhando excecao caso nao tenha sido criado tabela ocorrencias
+    try:
+        db_curs.execute("ALTER TABLE ocorrencias ADD COLUMN comentarios text")
+    except sqlite3.OperationalError:
+        pass
     db_conn.commit()
     return
 
