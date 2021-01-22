@@ -225,23 +225,25 @@ def gen_ocorrencias_mp(conf: Conf, db_conn: sqlite3.Connection):
         # retorna o dataframe e o filename numa tupla
         logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
         txtfile = TxtFile(txtpath)
-        return (txtfile.make_ocorrencias_dataframe(padroes), txtpath.as_posix())
+        return (txtfile.make_ocorrencias_dataframe(padroes), txtpath)
     # gerando lista de arquivos txt apropriados para grepping
     txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
     txtfiles_len = len(txtpaths)
     txtfiles_done = 0
     logging.info(f"{len(txtpaths)} arquivos na fila para extracao")
+    completed_names_tups = db_curs.execute(f"SELECT filename FROM completed_files").fetchall()
+    completed_names      = list(map(lambda t: t[0], completed_names_tups))
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
-        futures = [ tpe.submit(ocorrencias_from_txtpath, txtpath) for txtpath in txtpaths ]
+        futures = [ tpe.submit(ocorrencias_from_txtpath, txtpath) for txtpath in txtpaths if txtpath.name not in completed_names ]
         for future in concurrent.futures.as_completed(futures):
-            txtfile_df, txtfile_fullpath = future.result()
+            txtfile_df, txtfile_path = future.result()
             if txtfile_df is not None:
                 txtfile_df.to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
                 ocorrencias_geradas = txtfile_df.count()['lines']
             else:
                 ocorrencias_geradas = 0
             # adicionar arquivo processado aa tabela de arquivos ja processados
-            db_curs.execute(f"INSERT INTO completed_files (id, filename) VALUES (NULL,?)", (txtfile_fullpath,))
+            db_curs.execute(f"INSERT INTO completed_files (id, filename) VALUES (NULL,?)", (txtfile_path.name,))
             txtfiles_done += 1
             logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos. {ocorrencias_geradas} novas ocorrencias.")
     # adicionando coluna 'comentarios'
@@ -258,12 +260,12 @@ def choose_db_from_list(conf: Conf) -> Path:
     db_path_list    = [ filepath for filepath in output_dir_path.iterdir() if filepath.suffix == '.db' ]
     db_list_len     = len(db_path_list)
     user_input      = None
-    while user_input not in range(db_list_len):
+    while user_input is None or int(user_input) not in range(db_list_len):
         print("Escolha o db pelo seu numero:")
         for i in range(db_list_len):
             print(f"{i} - {db_path_list[i].name}")
         user_input = input(f"db escolhido [1-{db_list_len}]: ")
-    return db_path_list[user_input]
+    return db_path_list[int(user_input)]
 
 def gen_database(conf: Conf) -> sqlite3.Connection:
     # Escolher local/nome do db
