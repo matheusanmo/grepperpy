@@ -7,7 +7,7 @@ import sqlite3
 import datetime
 import concurrent.futures
 from os        import makedirs
-from typing    import List, Pattern
+from typing    import List, Pattern, Tuple
 from pprint    import pprint, pformat
 from pathlib   import Path
 from sqlite3   import connect, Connection
@@ -219,16 +219,20 @@ def gen_ocorrencias_mp(conf: Conf):
     logging.info(conf.pformat())
     max_workers = conf.max_workers
     padroes     = gen_padroes(conf)
-    def ocorrencias_from_txtpath(txtpath: Path) -> pd.DataFrame:
+    def ocorrencias_from_txtpath(txtpath: Path) -> Tuple[pd.DataFrame, str]:
+        # retorna o dataframe e o filename numa tupla
         logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
         txtfile = TxtFile(txtpath)
-        return txtfile.make_ocorrencias_dataframe(padroes)
+        return (txtfile.make_ocorrencias_dataframe(padroes), txtpath.as_posix())
     # inicializar nosso DB e sua tabela ocorrencias
     # TODO iniciar tabela de antemao ao inves de esperar o pandas criar um df para criar tabela a partir dele
     tablename   = "ocorrencias"
     db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
     db_conn     = connect(db_path.as_posix())
     db_curs     = db_conn.cursor()
+    # inicializar tabela para guardar arquivos que ja foram grep'ados
+    db_curs.execute(f"CREATE TABLE IF NOT EXISTS completed_files (id INTEGER PRIMARY KEY, filename TEXT )")
+    db_conn.commit()
     # gerando lista de arquivos txt apropriados para grepping
     txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
     txtfiles_len = len(txtpaths)
@@ -237,11 +241,14 @@ def gen_ocorrencias_mp(conf: Conf):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
         futures = [ tpe.submit(ocorrencias_from_txtpath, txtpath) for txtpath in txtpaths ]
         for future in concurrent.futures.as_completed(futures):
-            if future.result() is not None:
-                future.result().to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
-                ocorrencias_geradas = future.result().count()['lines']
+            txtfile_df, txtfile_fullpath = future.result()
+            if txtfile_df is not None:
+                txtfile_df.to_sql(name=tablename, con=db_conn, if_exists='append', method='multi')
+                ocorrencias_geradas = txtfile_df.count()['lines']
             else:
                 ocorrencias_geradas = 0
+            # adicionar arquivo processado aa tabela de arquivos ja processados
+            db_curs.execute(f"INSERT INTO completed_files (id, filename) VALUES (NULL,?)", (txtfile_fullpath,))
             txtfiles_done += 1
             logging.info(f"{txtfiles_done}/{txtfiles_len} arquivos prontos. {ocorrencias_geradas} novas ocorrencias.")
     # adicionando coluna 'comentarios'
