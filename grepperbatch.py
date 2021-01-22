@@ -215,8 +215,10 @@ def gen_ocorrencias(conf: Conf):
     db_conn.commit()
     return
 
-def gen_ocorrencias_mp(conf: Conf):
+def gen_ocorrencias_mp(conf: Conf, db_conn: sqlite3.Connection):
     logging.info(conf.pformat())
+    tablename   = "ocorrencias"
+    db_curs     = db_conn.cursor()
     max_workers = conf.max_workers
     padroes     = gen_padroes(conf)
     def ocorrencias_from_txtpath(txtpath: Path) -> Tuple[pd.DataFrame, str]:
@@ -224,15 +226,6 @@ def gen_ocorrencias_mp(conf: Conf):
         logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
         txtfile = TxtFile(txtpath)
         return (txtfile.make_ocorrencias_dataframe(padroes), txtpath.as_posix())
-    # inicializar nosso DB e sua tabela ocorrencias
-    # TODO iniciar tabela de antemao ao inves de esperar o pandas criar um df para criar tabela a partir dele
-    tablename   = "ocorrencias"
-    db_path     = Path(conf.diretorio_output).joinpath(f"ocorrencias_{TIMESTAMP}.db")
-    db_conn     = connect(db_path.as_posix())
-    db_curs     = db_conn.cursor()
-    # inicializar tabela para guardar arquivos que ja foram grep'ados
-    db_curs.execute(f"CREATE TABLE IF NOT EXISTS completed_files (id INTEGER PRIMARY KEY, filename TEXT )")
-    db_conn.commit()
     # gerando lista de arquivos txt apropriados para grepping
     txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
     txtfiles_len = len(txtpaths)
@@ -260,10 +253,51 @@ def gen_ocorrencias_mp(conf: Conf):
     db_conn.commit()
     return
 
+def choose_db_from_list(conf: Conf) -> Path:
+    output_dir_path = Path(conf.diretorio_output)
+    db_path_list    = [ filepath for filepath in output_dir_path.iterdir() if filepath.suffix == '.db' ]
+    db_list_len     = len(db_path_list)
+    user_input      = None
+    while user_input not in range(db_list_len):
+        print("Escolha o db pelo seu numero:")
+        for i in range(db_list_len):
+            print(f"{i} - {db_path_list[i].name}")
+        user_input = input(f"db escolhido [1-{db_list_len}]: ")
+    return db_path_list[user_input]
+
+def gen_database(conf: Conf) -> sqlite3.Connection:
+    # Escolher local/nome do db
+    db_filepath = Path(conf.diretorio_output, f"{conf.txts_diretorio}_{TIMESTAMP}.db")
+    user_input = None
+    while user_input not in ['y', 'n']:
+        user_input = input(f"Usar db {db_filepath.name}? [y/n]: ")
+    if user_input == 'y':
+        pass
+    elif user_input == 'n':
+        print("a - inserir manualmente nome do arquivo")
+        print("b - escolher dentre dbs existentes")
+        user_input = input("[a/b]: ")
+        if user_input == 'a':
+            db_manual_filename = input("nome do arquivo do db sem a extensao '.db': ")
+            db_filepath = Path(conf.diretorio_output, f"{db_manual_filename}.db")
+        elif user_input == 'b':
+            db_filepath = choose_db_from_list(conf)
+    print(f"db escolhido: {db_filepath.as_posix()}")
+    db_conn = sqlite3.connect(db_filepath.as_posix())
+    db_curs = db_conn.cursor()
+    # criar tabela `ocorrencias`
+    db_curs.execute(f"CREATE TABLE IF NOT EXISTS 'ocorrencias' ('index' INTEGER, 'lines' TEXT, 'pattern_name' TEXT, 'filename' TEXT, 'linha_match' INTEGER , comentarios text)")
+    # criar tabela `completed_files`
+    db_curs.execute(f"CREATE TABLE IF NOT EXISTS completed_files (id INTEGER PRIMARY KEY, filename TEXT )")
+    db_conn.commit()
+    # retornar conexao
+    return db_conn
+
 def main():
     conf = Conf(Path(gen_conf_path_str()))
     setup_logging(conf.debug_log)
-    gen_ocorrencias_mp(conf)
+    db_conn = gen_database(conf)
+    gen_ocorrencias_mp(conf, db_conn)
 
 if __name__ == "__main__":
     main()
