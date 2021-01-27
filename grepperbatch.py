@@ -110,6 +110,7 @@ class Ocorrencia:
 class TxtFile: 
     def __init__(self, txtpath: Path):
         self.filename = txtpath.name
+        self.txtpath = txtpath
         with open(txtpath, "rt") as txthandle:
             self.lines = [ desacentuar(line) for line in txthandle.readlines() ]
         self.lines_len = len(self.lines)
@@ -129,7 +130,7 @@ class TxtFile:
                         ocorrencias.append(Ocorrencia(
                             self.lines[min_index:max_index],
                             padrao.pattern_name,
-                            self.filename,
+                            self.txtpath.as_posix(),
                             i))
                         break
         if ocorrencias == []:
@@ -215,7 +216,28 @@ def gen_ocorrencias(conf: Conf):
     db_conn.commit()
     return
 
-def gen_ocorrencias_mp(conf: Conf, db_conn: sqlite3.Connection):
+def gen_filepaths(conf: Conf) -> List[Path]:
+    # gera lista de arquivos txt apropriados para grepping
+    txts_path = Path(conf.txts_diretorio)
+    # se txts_diretorio eh um diretorio, apanhamos txts la
+    if txts_path.is_dir():
+        logging.info(f"analisando diretorio de txts")
+        filepaths = [ tp for tp in txts_path.iterdir() if tp.suffixes == [".txt"] ]
+        return filepaths
+    # se txts_diretorio eh um db, apanhamos os filepaths onde houveram matches
+    if txts_path.is_file():
+        if txts_path.suffix == ".db":
+            db_conn = sqlite3.connect(txts_path.as_posix())
+            logging.info(f"analisando arquivos a partir de db")
+            db_curs = db_conn.cursor()
+            db_curs.execute(f"SELECT DISTINCT filename FROM ocorrencias")
+            filepaths = list(map(lambda t: Path(t[0]), db_curs.fetchall()))
+            print(filepaths)
+            return filepaths
+    logging.error(f"gen_filepaths: recebeu argumento ruim. apontar txts_diretorio para .db ou diretorio.")
+    return []
+
+def gen_ocorrencias_mp(txtpaths: List[Path], db_conn: sqlite3.Connection, conf: Conf):
     logging.info(conf.pformat())
     tablename   = "ocorrencias"
     db_curs     = db_conn.cursor()
@@ -226,14 +248,13 @@ def gen_ocorrencias_mp(conf: Conf, db_conn: sqlite3.Connection):
         logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
         txtfile = TxtFile(txtpath)
         return (txtfile.make_ocorrencias_dataframe(padroes), txtpath)
-    # gerando lista de arquivos txt apropriados para grepping
-    txtpaths    = [ tp for tp in Path(conf.txts_diretorio).iterdir() if tp.suffixes == [".txt"] ]
     txtfiles_len = len(txtpaths)
     txtfiles_done = 0
     logging.info(f"{len(txtpaths)} arquivos na fila para extracao")
     completed_names_tups = db_curs.execute(f"SELECT filename FROM completed_files").fetchall()
     completed_names      = list(map(lambda t: t[0], completed_names_tups))
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as tpe:
+        # pular arquivos ja processados, i.e. que estao na tabela completed_files
         futures = [ tpe.submit(ocorrencias_from_txtpath, txtpath) for txtpath in txtpaths if txtpath.name not in completed_names ]
         for future in concurrent.futures.as_completed(futures):
             txtfile_df, txtfile_path = future.result()
@@ -264,7 +285,7 @@ def choose_db_from_list(conf: Conf) -> Path:
         print("Escolha o db pelo seu numero:")
         for i in range(db_list_len):
             print(f"{i} - {db_path_list[i].name}")
-        user_input = input(f"db escolhido [1-{db_list_len}]: ")
+        user_input = input(f"db escolhido [0-{db_list_len-1}]: ")
     return db_path_list[int(user_input)]
 
 def gen_database(conf: Conf) -> sqlite3.Connection:
@@ -295,11 +316,17 @@ def gen_database(conf: Conf) -> sqlite3.Connection:
     # retornar conexao
     return db_conn
 
+def ocorrencias_from_db(db_conn: sqlite3.Connection, conf: Conf) -> pd.DataFrame:
+    # apanhar TxtFiles com matches
+    db_curs = db_conn.cursor()
+    db_curs.execute(f"SELECT DISTINCT filename FROM ocorrencias")
+    return list(map(lambda t: Path(t[0]), db_curs.fetchall()))
+
 def main():
     conf = Conf(Path(gen_conf_path_str()))
     setup_logging(conf.debug_log)
     db_conn = gen_database(conf)
-    gen_ocorrencias_mp(conf, db_conn)
+    gen_ocorrencias_mp(gen_filepaths(conf), db_conn, conf)
 
 if __name__ == "__main__":
     main()

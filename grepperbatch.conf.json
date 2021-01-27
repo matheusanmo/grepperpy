@@ -1,5 +1,5 @@
 {
-"txts_diretorio":     "teste_5",
+"txts_diretorio":     "output_teste/teste.db",
 "debug_log":          "True",
 "diretorio_output":   "output_teste",
 "max_workers":         5,
