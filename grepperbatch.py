@@ -216,6 +216,34 @@ def gen_ocorrencias(conf: Conf):
     db_conn.commit()
     return
 
+def select_filepaths(filepaths: List[Path]) -> List[Path]:
+    chosen_indices = set()
+    filepaths_len = len(filepaths)
+    user_input = None
+    while user_input != "a":
+        # mostrar arquivos
+        for filepath, i in zip(filepaths, range(len(filepaths))):
+            if i in chosen_indices:
+                print(f"[X] {i} - filepath.name")
+            else:
+                print(f"[ ] {i} - filepath.name")
+        print(f"a - continuar com {len(chosen_indices)} arquivos (marcados com 'X')")
+        print(f"b - acrescentar arquivo(s) para analise")
+        print(f"c - remover arquivo(s) para analise")
+        user_input = input("[abc]: ")
+        # escolher intervalo
+        if user_input == "b":
+            i_inicial = int(input(f"indice do primeiro arquivo [0-{filepaths_len - 1}]: "))
+            i_final  = int(input(f"indice do ultimo arquivo [{i_inicial}-{filepaths_len - 1}]: "))
+            chosen_indices = chosen_indices.union(range(i_inicial, i_final + 1))
+        if user_input == "c":
+            i_inicial = int(input(f"indice do primeiro arquivo [0-{filepaths_len - 1}]: "))
+            i_final  = int(input(f"indice do ultimo arquivo [{i_inicial}-{filepaths_len - 1}]: "))
+            chosen_indices = chosen_indices.difference(range(i_inicial, i_final + 1))
+    # intersecao do conjunto com valores validos para descartar indices 
+    # invalidos silenciosamente
+    return [filepaths[i] for i in chosen_indices.intersection(range(filepaths_len))]
+
 def gen_filepaths(conf: Conf) -> List[Path]:
     # gera lista de arquivos txt apropriados para grepping
     txts_path = Path(conf.txts_diretorio)
@@ -223,19 +251,27 @@ def gen_filepaths(conf: Conf) -> List[Path]:
     if txts_path.is_dir():
         logging.info(f"analisando diretorio de txts")
         filepaths = [ tp for tp in txts_path.iterdir() if tp.suffixes == [".txt"] ]
-        return filepaths
     # se txts_diretorio eh um db, apanhamos os filepaths onde houveram matches
-    if txts_path.is_file():
+    elif txts_path.is_file():
         if txts_path.suffix == ".db":
             db_conn = sqlite3.connect(txts_path.as_posix())
             logging.info(f"analisando arquivos a partir de db")
             db_curs = db_conn.cursor()
             db_curs.execute(f"SELECT DISTINCT filename FROM ocorrencias")
             filepaths = list(map(lambda t: Path(t[0]), db_curs.fetchall()))
-            print(filepaths)
-            return filepaths
-    logging.error(f"gen_filepaths: recebeu argumento ruim. apontar txts_diretorio para .db ou diretorio.")
-    return []
+    else:
+        logging.error(f"gen_filepaths: recebeu argumento ruim. apontar txts_diretorio para .db ou diretorio.")
+        return []
+    print(f"{len(filepaths)} arquivos de texto encontrados.")
+    print(f"a - analisar todos arquivos")
+    print(f"b - selecionar intervalos de arquivos")
+    user_input = None
+    while user_input not in ['a','b']:
+        user_input = input(f"[ab]: ")
+    if user_input == 'a':
+        return filepaths
+    elif user_input == 'b':
+        return select_filepaths(filepaths)
 
 def gen_ocorrencias_mp(txtpaths: List[Path], db_conn: sqlite3.Connection, conf: Conf):
     logging.info(conf.pformat())
@@ -289,8 +325,10 @@ def choose_db_from_list(conf: Conf) -> Path:
     return db_path_list[int(user_input)]
 
 def gen_database(conf: Conf) -> sqlite3.Connection:
+    # removendo caracteres que vao causar problema ao criar db com esse nome
+    clean_txts_diretorio = re.sub(r'[/\\ ;"]', '_', conf.txts_diretorio)
     # Escolher local/nome do db
-    db_filepath = Path(conf.diretorio_output, f"{conf.txts_diretorio}_{TIMESTAMP}.db")
+    db_filepath = Path(conf.diretorio_output, f"{clean_txts_diretorio}_{TIMESTAMP}.db")
     user_input = None
     while user_input not in ['y', 'n']:
         user_input = input(f"Usar db {db_filepath.name}? [y/n]: ")
@@ -306,7 +344,10 @@ def gen_database(conf: Conf) -> sqlite3.Connection:
         elif user_input == 'b':
             db_filepath = choose_db_from_list(conf)
     print(f"db escolhido: {db_filepath.as_posix()}")
-    db_conn = sqlite3.connect(db_filepath.as_posix())
+    try:
+        db_conn = sqlite3.connect(db_filepath.as_posix())
+    except:
+        import pdb;pdb.set_trace()
     db_curs = db_conn.cursor()
     # criar tabela `ocorrencias`
     db_curs.execute(f"CREATE TABLE IF NOT EXISTS 'ocorrencias' ('index' INTEGER, 'lines' TEXT, 'pattern_name' TEXT, 'filename' TEXT, 'linha_match' INTEGER , comentarios text)")
