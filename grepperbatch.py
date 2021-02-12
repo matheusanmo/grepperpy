@@ -249,13 +249,13 @@ def gen_filepaths(conf: Conf) -> List[Path]:
     txts_path = Path(conf.txts_diretorio)
     # se txts_diretorio eh um diretorio, apanhamos txts la
     if txts_path.is_dir():
-        logging.info(f"analisando diretorio de txts")
+        logging.info(f"analisando arquivos no diretorio passado")
         filepaths = [ tp for tp in txts_path.iterdir() if tp.suffixes == [".txt"] ]
     # se txts_diretorio eh um db, apanhamos os filepaths onde houveram matches
     elif txts_path.is_file():
         if txts_path.suffix == ".db":
             db_conn = sqlite3.connect(txts_path.as_posix())
-            logging.info(f"analisando arquivos a partir de db")
+            logging.info(f"analisando arquivos a partir do DB passado")
             db_curs = db_conn.cursor()
             db_curs.execute(f"SELECT DISTINCT filename FROM ocorrencias")
             filepaths = list(map(lambda t: Path(t[0]), db_curs.fetchall()))
@@ -272,6 +272,47 @@ def gen_filepaths(conf: Conf) -> List[Path]:
         return filepaths
     elif user_input == 'b':
         return select_filepaths(filepaths)
+
+def gen_ocorrencias_sp(txtpaths: List[Path], db_conn: sqlite3.Connection, conf: Conf):
+    logging.warning(f"iniciando analise em serie (aumente `max_workers` para analisar em paralelo)")
+    logging.info(conf.pformat())
+    tablename   = "ocorrencias"
+    db_curs     = db_conn.cursor()
+    padroes     = gen_padroes(conf)
+    def ocorrencias_from_txtpath(txtpath: Path) -> Tuple[pd.DataFrame, str]:
+        # retorna o dataframe e o filename numa tupla
+        logging.info(f"extraindo ocorrencias {txtpath.as_posix()}")
+        txtfile = TxtFile(txtpath)
+        return (txtfile.make_ocorrencias_dataframe(padroes), txtpath)
+    txtfiles_len = len(txtpaths)
+    txtfiles_done = 0
+    logging.info(f"{len(txtpaths)} arquivos na fila para extracao")
+    completed_names_tups = db_curs.execute(f"SELECT filename FROM completed_files").fetchall()
+    completed_names      = list(map(lambda t: t[0], completed_names_tups))
+    logging.info(f"{len(completed_names)} arquivos ja estao no DB")
+    txtpaths_missing = []
+    for txtpath in txtpaths:
+        if txtpath.name in completed_names:
+            logging.info(f"pulando {txtpath.name} pois ja existe no DB")
+        else:
+            txtpaths_missing.append(txtpath)
+    for txtpath in txtpaths_missing:
+        txtfiles_done = 1
+        txtfiles_len  = len(txtpaths_missing)
+        logging.info(f"analisando {txtpath.name} ({txtfiles_done}/{txtfiles_len})")
+        txtfile = TxtFile(txtpath)
+        ocorrencias_len = txtfile.write_ocorrencias(padroes, db_conn, tablename)
+        logging.info(f"{ocorrencias_len} ocorrencias encontradas")
+        db_curs.execute(f"INSERT INTO completed_files (id, filename) VALUES (NULL,?)", (txtpath.name,))
+        txtfiles_done += 1
+    # adicionando coluna 'comentarios'
+    # apanhando excecao caso nao tenha sido criado tabela ocorrencias
+    try:
+        db_curs.execute("ALTER TABLE ocorrencias ADD COLUMN comentarios text")
+    except sqlite3.OperationalError:
+        pass
+    db_conn.commit()
+    return
 
 def gen_ocorrencias_mp(txtpaths: List[Path], db_conn: sqlite3.Connection, conf: Conf):
     logging.info(conf.pformat())
@@ -325,10 +366,9 @@ def choose_db_from_list(conf: Conf) -> Path:
     return db_path_list[int(user_input)]
 
 def gen_database(conf: Conf) -> sqlite3.Connection:
-    # removendo caracteres que vao causar problema ao criar db com esse nome
-    clean_txts_diretorio = re.sub(r'[/\\ ;"]', '_', conf.txts_diretorio)
     # Escolher local/nome do db
-    db_filepath = Path(conf.diretorio_output, f"{clean_txts_diretorio}_{TIMESTAMP}.db")
+    db_filename = Path(conf.txts_diretorio).name
+    db_filepath = Path(conf.diretorio_output, f"{db_filename}_{TIMESTAMP}.db")
     user_input = None
     while user_input not in ['y', 'n']:
         user_input = input(f"Usar db {db_filepath.name}? [y/n]: ")
@@ -367,7 +407,11 @@ def main():
     conf = Conf(Path(gen_conf_path_str()))
     setup_logging(conf.debug_log)
     db_conn = gen_database(conf)
-    gen_ocorrencias_mp(gen_filepaths(conf), db_conn, conf)
+    if conf.max_workers == 1:
+        gen_ocorrencias_sp(gen_filepaths(conf), db_conn, conf)
+    else:
+        gen_ocorrencias_mp(gen_filepaths(conf), db_conn, conf)
+
 
 if __name__ == "__main__":
     main()

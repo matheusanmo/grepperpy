@@ -1,7 +1,7 @@
 {
-"txts_diretorio":     "output_teste/teste.db",
+"txts_diretorio":     "/home/made/Projetos/tribunais-scrape/TJPR/TJPR/",
 "debug_log":          "True",
-"diretorio_output":   "output_teste",
-"max_workers":         5,
-"padroes_json" :      "padroes_menor.json"
+"diretorio_output":   "tjpr",
+"max_workers":         1,
+"padroes_json" :      "padroes.json"
 }
